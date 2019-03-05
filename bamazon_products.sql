@@ -1,6 +1,5 @@
 use bamazonDB;
 
---items:
 insert into products (product_name, department_name, price, stock_quantity)
 values ("Bike", "sporting", 98.95, 55);
 
