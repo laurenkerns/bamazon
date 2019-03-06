@@ -47,18 +47,29 @@ function question(){
             }
         ])
         .then(function(anwser){
+            var productID = anwser.itemID;
             var quantity = anwser.quantity;
-        
-            var query = 'select ID, product_name, department_name, price, stock_quantity from products where ?';
-            connection.query(query ,anwser.itemID, function(err, res){
-                var price = (res[0].price);
-                var total = quantity * price;
+            
+            connection.query('select ID, product_name, department_name, price, stock_quantity from products where ?',anwser.itemID, function(err, res){
+                // var price = ();
+                // var total = quantity * res[0].price;
+                // var newQuan = anwser.itemID.stock_quantity - quantity;
                 if(err) throw err;
-                if (res[0].stock_quantity - quantity >= 0) {
-                    console.log("We'll get right on that order! Your total is: " + total);
-                }
-                else{
+
+                if (res[0].stock_quantity - quantity <= 0) {
                     console.log("Sorry not enough inventory!")
+                    question ();                
+                }
+                 else{
+                    connection.query("update products set stock_quantity = (stock_quantity-" + quantity + ") where ID =" + productID, function(err, res){
+                        if(err) throw err;
+                    })
+                    console.log("We'll get right on that order! Your total is: " + `${quantity * res[0].price}`)
+            
+                    console.log(quantity);
+        
+                    
+                    
                 }
                 connection.end();
     
