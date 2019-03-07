@@ -1,8 +1,8 @@
-var mysql = require("mysql");
-var inquirer = require("inquirer");
+const mysql = require("mysql");
+const inquirer = require("inquirer");
 
 
-var connection = mysql.createConnection({
+const connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
     user: "root",
@@ -45,37 +45,40 @@ function question(){
                 type: "input",
                 message: "How many would you like to buy?",
             }
-        ])
-        .then(function(anwser){
+        ]).then(function(anwser){
             var productID = anwser.itemID;
             var quantity = anwser.quantity;
-            
-            connection.query('select ID, product_name, department_name, price, stock_quantity from products where ?',anwser.itemID, function(err, res){
-                // var price = ();
-                // var total = quantity * res[0].price;
-                // var newQuan = anwser.itemID.stock_quantity - quantity;
-                if(err) throw err;
 
-                if (res[0].stock_quantity - quantity <= 0) {
-                    console.log("Sorry not enough inventory!")
-                    question ();                
+//connect to database using users input
+
+            connection.query('select ID, product_name, department_name, price, stock_quantity from products where ?',productID, function(err, res){
+                
+                if(err) throw err;
+                 if (res[0].stock_quantity - quantity <= 0) {
+                        console.log("----------Sorry not enough inventory!----------")
+                            question ();                
                 }
                  else{
+                    connection.query('select ID, product_name, department_name, price, stock_quantity from products where ?', productID, function(err,res){
+                        if(err) throw err;
+                            var total = quantity * res[0].price;
+                                console.log("Purchase sucessful! Your total is: " + total);
+                })
                     connection.query("update products set stock_quantity = (stock_quantity-" + quantity + ") where ID =" + productID, function(err, res){
                         if(err) throw err;
+                         // var newQuan = res[0].stock_quantity - quantity;
+                            console.log("Stock quantity has been updated.");
                     })
-                    console.log("We'll get right on that order! Your total is: " + `${quantity * res[0].price}`)
-            
-                    console.log(quantity);
-        
-                    
-                    
+                    // console.log(quantity);
                 }
                 connection.end();
-    
             });
-        });           
-};
+        });     
+    };    
+
+
+
+
     
 
     
