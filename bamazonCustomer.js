@@ -38,12 +38,12 @@ function question(){
             {
                 name: "itemID",
                 type: "input",
-                message: "What product would you like to buy? Enter the Product ID",
+                message: "What product would you like to buy? Enter the Product ID"
             },
             {
                 name: "quantity",
                 type: "input",
-                message: "How many would you like to buy?",
+                message: "How many would you like to buy?"
             }
         ]).then(function(anwser){
             var productID = anwser.itemID;
@@ -51,7 +51,7 @@ function question(){
 
 //connect to database using users input
 
-            connection.query('select ID, product_name, department_name, price, stock_quantity from products where ?',productID, function(err, res){
+            connection.query('select ID, product_name, department_name, price, stock_quantity from products where ?', [productID], function(err, res){
                 
                 if(err) throw err;
                  if (res[0].stock_quantity - quantity <= 0) {
@@ -59,12 +59,12 @@ function question(){
                             question ();                
                 }
                  else{
-                    connection.query('select ID, product_name, department_name, price, stock_quantity from products where ?', productID, function(err,res){
+                    connection.query('select ID, product_name, department_name, price, stock_quantity from products where ID =?', [productID], function(err,res){
                         if(err) throw err;
                             var total = quantity * res[0].price;
                                 console.log("Purchase sucessful! Your total is: " + total);
                 })
-                    connection.query("update products set stock_quantity = (stock_quantity-" + quantity + ") where ID =" + productID, function(err, res){
+                    connection.query("update products set stock_quantity = (stock_quantity-" + quantity + ") where ID =" + [productID], function(err, res){
                         if(err) throw err;
                          // var newQuan = res[0].stock_quantity - quantity;
                             console.log("Stock quantity has been updated.");
